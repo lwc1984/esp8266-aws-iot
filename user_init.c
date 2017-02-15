@@ -19,16 +19,17 @@
 
 
 void user_init(void) {
-    uart_set_baud(0, 115200);
-    printf("SDK version: %s, free heap %u\n", sdk_system_get_sdk_version(),
-            xPortGetFreeHeapSize());
+  uart_set_baud(0, 115200);
+  printf("SDK version: %s, free heap %u\n", sdk_system_get_sdk_version(),
+        xPortGetFreeHeapSize());
 
-    init_queues();
-    configure_wifi(WIFI_SSID, WIFI_PASS);
-    init_handle_aws_message_task();
+  init_queues();
+  configure_wifi(WIFI_SSID, WIFI_PASS);
+  init_handle_aws_message_task();
+  init_beat_task();
 
-    xTaskCreate(&wifi_task, "wifi_task", 256, NULL, 2, NULL);
-    xTaskCreate(&beat_task, "beat_task", 256, NULL, 2, NULL);
-    xTaskCreate(&aws_iot_task, "aws_iot_task", 2048, NULL, 2, NULL);
-    xTaskCreate(&handle_aws_message_task, "handle_aws_message_task", 256, NULL, 2, NULL);
+  xTaskCreate(&wifi_task, "wifi_task", 256, NULL, 2, NULL);
+  xTaskCreate(&beat_task, "beat_task", 256, NULL, 2, NULL);
+  xTaskCreate(&aws_iot_task, "aws_iot_task", 2048, NULL, 2, NULL);
+  xTaskCreate(&handle_aws_message_task, "handle_aws_message_task", 256, NULL, 2, NULL);
 }

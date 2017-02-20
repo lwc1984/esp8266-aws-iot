@@ -7,16 +7,16 @@
 
 
 // The size of each individual message
-#define PUBLISH_QUEUE_ITEM_SIZE 16
+#define PUBLISH_QUEUE_ITEM_SIZE 64
 
 // The length of the publish queue
-#define PUBLISH_QUEUE_LENGTH 3 
+#define PUBLISH_QUEUE_LENGTH 3
 
 // The size of each individual message size
-#define SUBSCRIBE_QUEUE_ITEM_SIZE 16
+#define SUBSCRIBE_QUEUE_ITEM_SIZE 64
 
 // The length of the subscribe queue
-#define SUBSCRIBE_QUEUE_LENGTH 3 
+#define SUBSCRIBE_QUEUE_LENGTH 3
 
 
 // The queue to publish messages.

@@ -74,18 +74,21 @@ static int mqtt_ssl_write(mqtt_network_t* n, unsigned char* buffer, int len,
 static void topic_received(mqtt_message_data_t *md) {
   mqtt_message_t *message = md->message;
   int i;
-  char msg[16];
+  char msg[SUBSCRIBE_QUEUE_ITEM_SIZE];
 
   printf("Received: ");
   for (i = 0; i < md->topic->lenstring.len; ++i)
 	printf("%c", md->topic->lenstring.data[i]);
 
   printf(" = ");
-  for (i = 0; i < (int) message->payloadlen; ++i)
+  for (i = 0; i < (int) message->payloadlen &&
+       i < SUBSCRIBE_QUEUE_ITEM_SIZE-1; ++i) {
 	printf("%c", ((char *) (message->payload))[i]);
+    msg[i] = ((char *) (message->payload))[i];
+  }
   printf("\r\n");
+  msg[i] = '\0';
 
-  snprintf(msg, sizeof(msg), "%s", (char *)(message->payload));
   if (xQueueSend(aws_subscribe_queue, (void *) msg, 0) == pdFALSE) {
 	printf("Publish queue overflow\r\n");
   }
@@ -155,7 +158,7 @@ void aws_iot_task(void *pvParameters) {
         xQueueReset(aws_publish_queue);
 
         while (is_wifi_alive() && !ssl_reset) {
-            char msg[64];
+            char msg[PUBLISH_QUEUE_ITEM_SIZE];
             while (xQueueReceive(aws_publish_queue, (void *) msg, 0) == pdTRUE) {
                 TickType_t task_tick = xTaskGetTickCount();
                 uint32_t free_heap = xPortGetFreeHeapSize();

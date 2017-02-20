@@ -4,6 +4,7 @@
 #include "espressif/esp_common.h"
 
 #include "beat.h"
+#include "queues.h"
 #include "wifi.h"
 #include "esp8266.h"
  
@@ -22,12 +23,17 @@ void init_beat_task() {
 }
 
 void gpio_intr_handler(uint8_t gpio_num) {
-  uint32_t now = xTaskGetTickCountFromISR();
-  xQueueSendToBackFromISR(tsqueue, &now, NULL);
+#ifdef DEBUG
+  printf("Received interrupt at gpio: %d\r\n", gpio_num);
+#endif
+  if (gpio_num == gpio) {
+    uint32_t now = xTaskGetTickCountFromISR();
+    xQueueSendToBackFromISR(tsqueue, &now, NULL);
+  }
 }
 
 void send_aws_message() {
-  char msg[16];
+  char msg[PUBLISH_QUEUE_ITEM_SIZE];
   int count = 0;
 
   if (!is_wifi_alive()) {
